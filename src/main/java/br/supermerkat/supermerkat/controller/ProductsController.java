@@ -1,15 +1,16 @@
 package br.supermerkat.supermerkat.controller;
 
+import br.supermerkat.supermerkat.api.ReturnResponse;
 import br.supermerkat.supermerkat.entity.Products;
 import br.supermerkat.supermerkat.repository.ProductsRepository;
 import br.supermerkat.supermerkat.service.ProductsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -28,7 +29,7 @@ public class ProductsController {
     }
 
     @GetMapping("/{productId}")
-    public Products buscarById(@PathVariable Long productId) throws Exception {
+    public Products findById(@PathVariable Long productId) throws Exception {
         try {
 
              return productsService.buscarOuFalhar(productId);
@@ -39,19 +40,26 @@ public class ProductsController {
     }
 
     @PostMapping
-    public Products salvar(@RequestBody Products products){
-        return  productsService.salvar(products);
+    public ResponseEntity<ReturnResponse> saveAndUpdate(@RequestBody Products products) throws Exception {
+        try {
+            ReturnResponse returnResponse = productsService.salvar(products);
+            return new ResponseEntity<>(returnResponse, returnResponse.getStatus());
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+
     }
 
-    @PutMapping("update/{productId}")
-    public Products atualizar(@PathVariable Long productId, @RequestBody Products products) throws Exception {
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<?> delete(@PathVariable Long productId) throws Exception {
 
         try {
-            Products productsAtual = productsService.buscarOuFalhar(productId);
-            BeanUtils.copyProperties(products,productsAtual,"id");
-            return productsService.salvar(productsAtual);
+            productsRepository.deleteById(productId);
+            return new ResponseEntity<>("Produto deletado com sucesso!", HttpStatus.OK);
         }catch (Exception e){
-            throw  new Exception( e.getCause());
+            throw new Exception(e.getMessage());
         }
+
     }
+
 }
