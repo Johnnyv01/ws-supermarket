@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,7 +44,13 @@ public class ProductsService {
 
     }
 
+    public void buscarOuFalhar1(String name){
 
+        Optional<Products>  product = repository.findByNameContainingIgnoreCase(name);
+
+        System.out.println("product: " + product);
+
+    }
 
     public Products buscarOuFalhar(Long productsId){
 

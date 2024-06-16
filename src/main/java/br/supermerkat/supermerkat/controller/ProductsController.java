@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ProductsController {
 
     @Autowired
@@ -36,6 +35,17 @@ public class ProductsController {
 
         }catch (Exception e){
            throw new Exception(e.getMessage());
+        }
+    }
+
+    @GetMapping("/nameProduct")
+    public void findByIdName(@RequestParam String nameProduct) throws Exception {
+        try {
+
+            productsService.buscarOuFalhar1(nameProduct);
+
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
         }
     }
 
