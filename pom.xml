@@ -80,6 +80,12 @@
 			<version>1.4</version>
 		</dependency>
 
+		<!-- Flyway para scripts de migração -->
+		<dependency>
+		<groupId>org.flywaydb</groupId>
+		<artifactId>flyway-core</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

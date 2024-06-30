@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  mysqldb:
+    image: mysql:8.4.0
+    container_name: meu-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: meu
+    networks:
+      - compose-bridge
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ws-supermarket:
+    image: johnnyvm/ws-supermarket:1.7
+    container_name: supermarket
+    networks:
+      - compose-bridge
+    ports:
+      - 3000:3000
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://meu-mysql:3306/supermarket?createDatabaseIfNotExist=true&serverTimezone=America/Sao_Paulo
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: meu
+    command: ["./wait-for-it.sh", "meu-mysql:3306", "--", "java", "-jar", "app.jar"]
+
+networks:
+  compose-bridge:
+    driver: bridge
