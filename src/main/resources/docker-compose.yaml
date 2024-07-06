@@ -8,7 +8,7 @@ services:
     networks:
       - compose-bridge
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "191.252.112.111" ]
       interval: 30s
       timeout: 10s
       retries: 3
