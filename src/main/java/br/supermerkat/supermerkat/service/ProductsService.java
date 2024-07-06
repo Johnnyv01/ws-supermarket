@@ -41,14 +41,26 @@ public class ProductsService {
                 .sendDateTime(Util.getDateTime())
                 .build();
 
-
     }
 
-    public void buscarOuFalhar1(String name){
+    public ReturnResponse findName(String name){
+        String message = "Produto foi encontrado com sucesso";
+        HttpStatus status = HttpStatus.OK;
 
         Optional<Products>  product = repository.findByNameContainingIgnoreCase(name);
 
         System.out.println("product: " + product);
+        if (!product.isPresent()) {
+            message = "Produto não encontrado";
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ReturnResponse.builder()
+                .status(status)
+                .message(message)
+                .object(product)
+                .sendDateTime(Util.getDateTime())
+                .build();
 
     }
 

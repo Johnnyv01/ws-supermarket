@@ -4,7 +4,6 @@ import br.supermerkat.supermerkat.api.ReturnResponse;
 import br.supermerkat.supermerkat.entity.Products;
 import br.supermerkat.supermerkat.repository.ProductsRepository;
 import br.supermerkat.supermerkat.service.ProductsService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +38,10 @@ public class ProductsController {
     }
 
     @GetMapping("/nameProduct")
-    public void findByIdName(@RequestParam String nameProduct) throws Exception {
+    public ResponseEntity<ReturnResponse> findNameProduct(@RequestParam String nameProduct) throws Exception {
         try {
-
-            productsService.buscarOuFalhar1(nameProduct);
-
+              ReturnResponse returnResponse =  productsService.findName(nameProduct);
+            return new ResponseEntity<>(returnResponse,returnResponse.getStatus());
         }catch (Exception e){
             throw new Exception(e.getMessage());
         }
