@@ -1,3 +1,9 @@
+FROM maven:3.8.5-openjdk-17 as build
+
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
 # Use a imagem base do OpenJDK 17
 FROM openjdk:17
 
@@ -14,7 +20,7 @@ COPY wait-for-it.sh $APP_DIR/
 RUN chmod +x $APP_DIR/wait-for-it.sh
 
 # Copia o arquivo app.jar para o diretório de trabalho dentro do container
-COPY ./target/supermerkat-0.0.1-SNAPSHOT.jar $APP_DIR/app.jar
+COPY --from=build ./app/target/*.jar ./app.jar
 
 # Define a porta exposta pelo container
 EXPOSE 3000
