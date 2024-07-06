@@ -14,7 +14,7 @@ services:
       retries: 3
 
   ws-supermarket:
-    image: johnnyvm/ws-supermarket:1.9
+    image: johnnyvm/ws-supermarket_build_image:latest
     container_name: supermarket
     networks:
       - compose-bridge
