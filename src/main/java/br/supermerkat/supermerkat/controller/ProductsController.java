@@ -29,15 +29,14 @@ public class ProductsController {
     @GetMapping("/{productId}")
     public Products findById(@PathVariable Long productId) throws Exception {
         try {
-
-             return productsService.buscarOuFalhar(productId);
+            return productsService.buscarOuFalhar(productId);
 
         }catch (Exception e){
            throw new Exception(e.getMessage());
         }
     }
 
-    @GetMapping("/nameProduct")
+    @GetMapping("/nameProducts")
     public ResponseEntity<ReturnResponse> findNameProduct(@RequestParam String nameProduct) throws Exception {
         try {
               ReturnResponse returnResponse =  productsService.findName(nameProduct);
@@ -62,10 +61,10 @@ public class ProductsController {
     public ResponseEntity<?> delete(@PathVariable Long productId) throws Exception {
 
         try {
-            productsRepository.deleteById(productId);
-            return new ResponseEntity<>("Produto deletado com sucesso!", HttpStatus.OK);
+            ReturnResponse returnResponse = productsService.deletar(productId);
+            return new ResponseEntity<>(returnResponse, returnResponse.getStatus());
         }catch (Exception e){
-            throw new Exception(e.getMessage());
+            throw new RuntimeException(e);
         }
 
     }

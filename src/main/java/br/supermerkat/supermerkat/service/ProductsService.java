@@ -70,4 +70,18 @@ public class ProductsService {
                .orElseThrow(() -> new NaoEncontradoException(productsId));
 
     }
+
+    public ReturnResponse deletar(Long productId) {
+        String message = "Recurso deletado com sucesso!";
+        HttpStatus status = HttpStatus.OK;
+
+        repository.deleteById(productId);
+
+        return ReturnResponse.builder()
+                .status(status)
+                .message(message)
+                .object(null)
+                .sendDateTime(Util.getDateTime())
+                .build();
+    }
 }
