@@ -5,7 +5,6 @@ import br.supermerkat.supermerkat.entity.Products;
 import br.supermerkat.supermerkat.repository.ProductsRepository;
 import br.supermerkat.supermerkat.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +19,7 @@ public class ProductsController {
 
     @Autowired
     private ProductsService productsService;
+
 
     @GetMapping
     public List<Products> todos(){
@@ -49,6 +49,7 @@ public class ProductsController {
     @PostMapping
     public ResponseEntity<ReturnResponse> saveAndUpdate(@RequestBody Products products) throws Exception {
         try {
+            System.out.println("products: " + products);
             ReturnResponse returnResponse = productsService.salvar(products);
             return new ResponseEntity<>(returnResponse, returnResponse.getStatus());
         }catch (Exception e){
