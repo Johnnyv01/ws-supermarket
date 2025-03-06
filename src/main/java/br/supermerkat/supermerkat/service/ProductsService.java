@@ -1,31 +1,33 @@
 package br.supermerkat.supermerkat.service;
 
-import br.supermerkat.supermerkat.api.ReturnResponse;
-import br.supermerkat.supermerkat.entity.Products;
-import br.supermerkat.supermerkat.exception.NaoEncontradoException;
-import br.supermerkat.supermerkat.repository.ProductsRepository;
+import br.supermerkat.supermerkat.util.api.ReturnResponse;
+import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
+import br.supermerkat.supermerkat.infrastructure.exception.NaoEncontradoException;
+import br.supermerkat.supermerkat.adapters.outbound.repositories.SpringProductsRepository;
 import br.supermerkat.supermerkat.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductsService {
 
     @Autowired
-    ProductsRepository repository;
+    SpringProductsRepository repository;
 
-    public ReturnResponse salvar( Products products){
+    private static Logger logger = LoggerFactory.getLogger(ProductsService.class);
+
+    public ReturnResponse salvar( ProductsEntity products){
 
         String message = "Produto foi cadastrado com sucesso!";
         HttpStatus status = HttpStatus.OK;
 
         if (products.getId() != null){
-            Optional<Products> productsOptional = repository.findById(products.getId());
+            Optional<ProductsEntity> productsOptional = repository.findById(products.getId());
             if (productsOptional.isPresent()){
                 message = "Produto foi atualizado com sucesso!";
                 status = HttpStatus.ACCEPTED;
@@ -47,9 +49,8 @@ public class ProductsService {
         String message = "Produto foi encontrado com sucesso";
         HttpStatus status = HttpStatus.OK;
 
-        Optional<Products>  product = repository.findByNameContainingIgnoreCase(name);
+        Optional<ProductsEntity>  product = repository.findByNameContainingIgnoreCase(name);
 
-        System.out.println("product: " + product);
         if (!product.isPresent()) {
             message = "Produto não encontrado";
             status = HttpStatus.NOT_FOUND;
@@ -64,8 +65,8 @@ public class ProductsService {
 
     }
 
-    public Products buscarOuFalhar(Long productsId){
-
+    public ProductsEntity buscarOuFalhar(Long productsId){
+        logger.error("Adicionando logs na aplicacao para testes");
        return repository.findById(productsId)
                .orElseThrow(() -> new NaoEncontradoException(productsId));
 
