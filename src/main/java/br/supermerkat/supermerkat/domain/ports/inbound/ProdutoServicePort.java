@@ -13,4 +13,6 @@ public interface ProdutoServicePort {
     ReturnResponse salvar(ProductsEntity products);
 
     ReturnResponse findName(String nameProduct);
+
+    ReturnResponse deletar(Long productId);
 }

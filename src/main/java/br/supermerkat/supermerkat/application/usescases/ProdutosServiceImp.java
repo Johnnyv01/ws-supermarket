@@ -21,8 +21,7 @@ public class ProdutosServiceImp implements ProdutoServicePort {
 
     @Override
     public List<ProductsEntity> findAll() {
-        List<ProductsEntity> productsEntities = productRepositoryPort.findAll();
-        return productsEntities;
+        return productRepositoryPort.findAll();
     }
 
     @Override
@@ -45,7 +44,6 @@ public class ProdutosServiceImp implements ProdutoServicePort {
         }
 
         productRepositoryPort.save(products);
-
         return ReturnResponse.builder()
                 .message(message)
                 .status(status)
@@ -70,6 +68,21 @@ public class ProdutosServiceImp implements ProdutoServicePort {
                 .status(status)
                 .message(message)
                 .object(product)
+                .sendDateTime(Util.getDateTime())
+                .build();
+    }
+
+    @Override
+    public ReturnResponse deletar(Long productId) {
+        String message = "Recurso deletado com sucesso!";
+        HttpStatus status = HttpStatus.OK;
+
+        productRepositoryPort.deleteById(productId);
+
+        return ReturnResponse.builder()
+                .status(status)
+                .message(message)
+                .object(null)
                 .sendDateTime(Util.getDateTime())
                 .build();
     }

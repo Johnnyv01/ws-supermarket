@@ -1,7 +1,6 @@
 package br.supermerkat.supermerkat.adapters.outbound.repositories;
 
 import br.supermerkat.supermerkat.domain.ports.outbound.ProductRepositoryPort;
-import br.supermerkat.supermerkat.infrastructure.exception.NaoEncontradoException;
 import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
 import br.supermerkat.supermerkat.infrastructure.mappers.MappersStruct;
 import org.springframework.stereotype.Component;
@@ -40,6 +39,11 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     @Override
     public Optional<ProductsEntity> findByNameContainingIgnoreCase(String nameProduct) {
         return springProductsRepository.findByNameContainingIgnoreCase(nameProduct);
+    }
+
+    @Override
+    public void deleteById(Long productsId) {
+        springProductsRepository.deleteById(productsId);
     }
 
 }

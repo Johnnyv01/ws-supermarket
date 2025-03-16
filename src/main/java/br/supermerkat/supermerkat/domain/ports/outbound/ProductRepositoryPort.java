@@ -13,4 +13,6 @@ public interface ProductRepositoryPort {
     ProductsEntity save(ProductsEntity products);
 
     Optional<ProductsEntity> findByNameContainingIgnoreCase (String nameProduct);
+
+    void deleteById(Long productsId);
 }

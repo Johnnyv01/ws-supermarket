@@ -4,22 +4,20 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Use a imagem base do OpenJDK 17
 FROM openjdk:17
 
-# Define uma variável de ambiente para o diretório de trabalho
+# Definindo uma variável de ambiente para o diretório de trabalho
 ENV APP_DIR /app
 
-# Define o diretório de trabalho dentro do container
+# Definindo o diretório de trabalho dentro do container
 WORKDIR $APP_DIR
 
 # Copia o script wait-for-it.sh para o diretório de trabalho dentro do container
 COPY wait-for-it.sh $APP_DIR/
 
-# Dá permissão de execução ao script wait-for-it.sh
 RUN chmod +x $APP_DIR/wait-for-it.sh
 
-# Copia o arquivo app.jar para o diretório de trabalho dentro do container
+# Copiar o arquivo app.jar para o diretório de trabalho dentro do container
 COPY --from=build ./app/target/*.jar ./app.jar
 
 # Define a porta exposta pelo container
