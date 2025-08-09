@@ -1,14 +1,15 @@
 package br.supermerkat.supermerkat.adapters.inbound.controller;
 
+import br.supermerkat.supermerkat.domain.model.request.ProductsRequestDTO;
 import br.supermerkat.supermerkat.domain.ports.inbound.ProdutoServicePort;
-import br.supermerkat.supermerkat.infrastructure.mappers.MappersStruct;
-import br.supermerkat.supermerkat.util.api.ReturnResponse;
-import br.supermerkat.supermerkat.domain.model.ProductsDTO;
-import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
+import br.supermerkat.supermerkat.infrastructure.exception.ResourceNotFoundException;
+import br.supermerkat.supermerkat.util.api.ResponseAPI;
+import br.supermerkat.supermerkat.domain.model.response.ProductsResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
@@ -16,58 +17,67 @@ public class ProductsController {
 
     private final ProdutoServicePort produtoServicePort;
 
-    private final MappersStruct mappersStruct;
-
-    public ProductsController(ProdutoServicePort produtoServicePort, MappersStruct mappersStruct) {
+    public ProductsController(ProdutoServicePort produtoServicePort) {
         this.produtoServicePort = produtoServicePort;
-        this.mappersStruct = mappersStruct;
-    }
-
-
-    @GetMapping
-    public List<ProductsDTO> todos(){
-        List<ProductsEntity> productsList = produtoServicePort.findAll();
-        return mappersStruct.toDtoProducts(productsList);
-    }
-
-    @GetMapping("/{productId}")
-    public ProductsDTO findById(@PathVariable Long productId) throws Exception {
-        try {
-            ProductsEntity productsEntity = produtoServicePort.buscarOuFalhar(productId);
-            return mappersStruct.toDtoProduct(productsEntity);
-        }catch (Exception e){
-           throw new Exception(e.getMessage());
-        }
-    }
-
-    @GetMapping("/nameProducts")
-    public ResponseEntity<ReturnResponse> findNameProduct(@RequestParam String nameProduct) throws Exception {
-        try {
-              ReturnResponse returnResponse =  produtoServicePort.findName(nameProduct);
-            return new ResponseEntity<>(returnResponse,returnResponse.getStatus());
-        }catch (Exception e){
-            throw new Exception(e.getMessage());
-        }
     }
 
     @PostMapping
-    public ResponseEntity<ReturnResponse> saveAndUpdate(@RequestBody ProductsEntity products) throws Exception {
+    public ResponseEntity<ResponseAPI<ProductsResponseDTO>> save(
+            @RequestBody ProductsRequestDTO products
+    ) throws Exception {
         try {
-            ReturnResponse response = produtoServicePort.salvar(products);
-            return new ResponseEntity<>(response, response.getStatus());
-        }catch (Exception e){
+            ResponseAPI<ProductsResponseDTO> produtoResponseDTO = produtoServicePort.create(products);
+            return new ResponseEntity<>(produtoResponseDTO, produtoResponseDTO.getStatus());
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
 
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<?> delete(@PathVariable Long productId){
+    @PutMapping("/{productId}")
+    public ResponseEntity<ResponseAPI<ProductsResponseDTO>> update(
+            @PathVariable UUID productId,
+            @RequestBody ProductsRequestDTO products
+    ) throws Exception {
         try {
-            ReturnResponse returnResponse = produtoServicePort.deletar(productId);
-            return new ResponseEntity<>(returnResponse, returnResponse.getStatus());
-        }catch (Exception e){
-            throw new RuntimeException(e);
+            ResponseAPI<ProductsResponseDTO> productsResponseDTOAPIReturnResponse = produtoServicePort.update(productId, products);
+            return new ResponseEntity<>(productsResponseDTOAPIReturnResponse, productsResponseDTOAPIReturnResponse.getStatus());
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseAPI<List<ProductsResponseDTO>>> todos() {
+        try {
+            ResponseAPI<List<ProductsResponseDTO>> produtoServicePortAll = produtoServicePort.findAll();
+            return new ResponseEntity<>(produtoServicePortAll, produtoServicePortAll.getStatus());
+        } catch (Exception e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<ResponseAPI<ProductsResponseDTO>> findById(
+            @PathVariable UUID productId
+    ) {
+        try {
+            ResponseAPI<ProductsResponseDTO> produtoResponseDTO = produtoServicePort.findById(productId);
+            return new ResponseEntity<>(produtoResponseDTO, produtoResponseDTO.getStatus());
+        } catch (RuntimeException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ResponseAPI<?>> delete(
+            @PathVariable UUID productId
+    ) {
+        try {
+            ResponseAPI<ProductsResponseDTO> produtoResponseDTO = produtoServicePort.deleteById(productId);
+            return new ResponseEntity<>(produtoResponseDTO, produtoResponseDTO.getStatus());
+        } catch (Exception e) {
+            throw new ResourceNotFoundException(e.getMessage());
         }
 
     }

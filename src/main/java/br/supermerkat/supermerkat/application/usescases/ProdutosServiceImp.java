@@ -1,89 +1,59 @@
 package br.supermerkat.supermerkat.application.usescases;
 
 import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
+import br.supermerkat.supermerkat.adapters.outbound.entity.UsuarioEntity;
+import br.supermerkat.supermerkat.adapters.outbound.repositories.SpringProductsRepository;
+import br.supermerkat.supermerkat.adapters.outbound.repositories.SpringUsersRepository;
+import br.supermerkat.supermerkat.application.BaseServiceImpl;
+import br.supermerkat.supermerkat.domain.model.request.ProductsRequestDTO;
+import br.supermerkat.supermerkat.domain.model.response.ProductsResponseDTO;
 import br.supermerkat.supermerkat.domain.ports.inbound.ProdutoServicePort;
-import br.supermerkat.supermerkat.domain.ports.outbound.ProductRepositoryPort;
-import br.supermerkat.supermerkat.infrastructure.exception.NaoEncontradoException;
-import br.supermerkat.supermerkat.util.Util;
-import br.supermerkat.supermerkat.util.api.ReturnResponse;
-import org.springframework.http.HttpStatus;
+import br.supermerkat.supermerkat.util.api.ResponseAPI;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
-public class ProdutosServiceImp implements ProdutoServicePort {
+@Service
+public class ProdutosServiceImp extends BaseServiceImpl<ProductsEntity, ProductsRequestDTO, ProductsResponseDTO, SpringProductsRepository> implements ProdutoServicePort {
 
-    private final ProductRepositoryPort productRepositoryPort;
+    private final SpringUsersRepository springUsersRepository;
 
-    public ProdutosServiceImp(ProductRepositoryPort productRepositoryPort) {
-        this.productRepositoryPort = productRepositoryPort;
+    protected ProdutosServiceImp(SpringProductsRepository repository, SpringUsersRepository springUsersRepository) {
+        super(repository, "Produtos", ProductsResponseDTO::fromEntity , ProductsResponseDTO::fromEntities);
+        this.springUsersRepository = springUsersRepository;
     }
 
     @Override
-    public List<ProductsEntity> findAll() {
-        return productRepositoryPort.findAll();
+    public ResponseAPI<ProductsResponseDTO> findById(UUID ui) {
+        return super.findById(ui);
     }
 
     @Override
-    public ProductsEntity buscarOuFalhar(Long productsId) {
-        return productRepositoryPort.findById(productsId).orElseThrow(() ->
-                new NaoEncontradoException("Produto não foi encontrado na nossa base de dados"));
+    public ResponseAPI<List<ProductsResponseDTO>> findAll() {
+        return super.findAll();
     }
 
     @Override
-    public ReturnResponse salvar(ProductsEntity products) {
-        String message = "Produto foi cadastrado com sucesso!";
-        HttpStatus status = HttpStatus.OK;
+    public ResponseAPI<ProductsResponseDTO> create(ProductsRequestDTO request) {
+        ProductsEntity productsEntity = request.toEntity();
 
-        if ( products.getId() != null ) {
-            Optional<ProductsEntity> productsOptional = productRepositoryPort.findById(products.getId());
-            if (productsOptional.isPresent()){
-                message = "Produto foi atualizado com sucesso!";
-                status = HttpStatus.ACCEPTED;
-            }
-        }
+        UsuarioEntity usuario = springUsersRepository.getOrThrow(request.getUsuarioId(),entityName);
+        productsEntity.setUsuario(usuario);
 
-        productRepositoryPort.save(products);
-        return ReturnResponse.builder()
-                .message(message)
-                .status(status)
-                .object(products)
-                .sendDateTime(Util.getDateTime())
-                .build();
+        repository.save(productsEntity);
+
+        return ResponseAPI.salvar(new ProductsResponseDTO(productsEntity.getId(),productsEntity.getName(), productsEntity.getPrice()));
     }
 
     @Override
-    public ReturnResponse findName(String nameProduct) {
-        String message = "Produto foi encontrado com sucesso";
-        HttpStatus status = HttpStatus.OK;
-
-        Optional<ProductsEntity>  product = productRepositoryPort.findByNameContainingIgnoreCase(nameProduct);
-
-        if (!product.isPresent()) {
-            message = "Produto não encontrado";
-            status = HttpStatus.NOT_FOUND;
-        }
-
-        return ReturnResponse.builder()
-                .status(status)
-                .message(message)
-                .object(product)
-                .sendDateTime(Util.getDateTime())
-                .build();
+    public ResponseAPI<ProductsResponseDTO> update(UUID uuid, ProductsRequestDTO request) {
+        return super.update(uuid, request);
     }
 
     @Override
-    public ReturnResponse deletar(Long productId) {
-        String message = "Recurso deletado com sucesso!";
-        HttpStatus status = HttpStatus.OK;
-
-        productRepositoryPort.deleteById(productId);
-
-        return ReturnResponse.builder()
-                .status(status)
-                .message(message)
-                .object(null)
-                .sendDateTime(Util.getDateTime())
-                .build();
+    public ResponseAPI<ProductsResponseDTO> deleteById(UUID ui) {
+        return super.deleteById(ui);
     }
 }
+

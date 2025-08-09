@@ -1,20 +1,22 @@
 package br.supermerkat.supermerkat.adapters.outbound.entity;
 
-import br.supermerkat.supermerkat.domain.Products;
+import br.supermerkat.supermerkat.application.base.BaseEntity;
 import com.sun.istack.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.UUID;
 
+
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "products")
-public class ProductsEntity {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "pdt_id")
-    private Long id;
+public class ProductsEntity extends BaseEntity {
 
     @NotNull
     @Column(name = "pdt_name")
@@ -22,16 +24,18 @@ public class ProductsEntity {
 
     @NotNull
     @Column(name = "pdt_price")
-    private String price;
+    private BigDecimal price;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "pdt_usr_id")
+    private UsuarioEntity usuario;
 
     public ProductsEntity() {
     }
 
-    public ProductsEntity(Long id, String name, String price) {
-
-    }
-
-    public Products toProduto() {
-        return new Products(this.id, this.name, this.price);
+    public ProductsEntity(UUID id, String name, BigDecimal price) {
+        super(id);
+        this.name = name;
+        this.price = price;
     }
 }

@@ -2,38 +2,34 @@ package br.supermerkat.supermerkat.adapters.outbound.repositories;
 
 import br.supermerkat.supermerkat.domain.ports.outbound.ProductRepositoryPort;
 import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
-import br.supermerkat.supermerkat.infrastructure.mappers.MappersStruct;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class ProductRepositoryAdapter implements ProductRepositoryPort {
 
     private final SpringProductsRepository springProductsRepository;
 
-    private final MappersStruct mappersStruct;
-
-    public ProductRepositoryAdapter(SpringProductsRepository springProductsRepository, MappersStruct mappersStruct) {
+    public ProductRepositoryAdapter(SpringProductsRepository springProductsRepository) {
         this.springProductsRepository = springProductsRepository;
-        this.mappersStruct = mappersStruct;
     }
 
     @Override
     public List<ProductsEntity> findAll() {
-        List<ProductsEntity> productsEntities = springProductsRepository.findAll();
-        return productsEntities;
+        return springProductsRepository.findAll();
     }
 
     @Override
-    public Optional<ProductsEntity> findById(Long products) {
+    public Optional<ProductsEntity> findById(UUID products) {
         return springProductsRepository.findById(products);
     }
 
     @Override
-    public ProductsEntity save(ProductsEntity products) {
-        return springProductsRepository.save(products);
+    public void save(ProductsEntity products) {
+        springProductsRepository.save(products);
     }
 
     @Override
@@ -42,7 +38,7 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     }
 
     @Override
-    public void deleteById(Long productsId) {
+    public void deleteById(UUID productsId) {
         springProductsRepository.deleteById(productsId);
     }
 

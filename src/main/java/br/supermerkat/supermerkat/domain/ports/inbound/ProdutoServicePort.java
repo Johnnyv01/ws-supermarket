@@ -1,18 +1,17 @@
 package br.supermerkat.supermerkat.domain.ports.inbound;
 
-import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
-import br.supermerkat.supermerkat.util.api.ReturnResponse;
-import java.util.List;
+import br.supermerkat.supermerkat.application.base.BaseService;
+import br.supermerkat.supermerkat.domain.model.request.ProductsRequestDTO;
+import br.supermerkat.supermerkat.domain.model.response.ProductsResponseDTO;
+import br.supermerkat.supermerkat.util.api.ResponseAPI;
 
-public interface ProdutoServicePort {
+import java.util.UUID;
 
-    List<ProductsEntity> findAll();
+public interface ProdutoServicePort extends BaseService<ProductsRequestDTO,ProductsResponseDTO> {
 
-    ProductsEntity buscarOuFalhar(Long productsId);
+    @Override
+    ResponseAPI<ProductsResponseDTO> create(ProductsRequestDTO request);
 
-    ReturnResponse salvar(ProductsEntity products);
-
-    ReturnResponse findName(String nameProduct);
-
-    ReturnResponse deletar(Long productId);
+    @Override
+    ResponseAPI<ProductsResponseDTO> update(UUID uuid, ProductsRequestDTO request);
 }
