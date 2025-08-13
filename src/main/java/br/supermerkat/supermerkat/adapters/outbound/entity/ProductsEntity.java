@@ -27,8 +27,8 @@ public class ProductsEntity extends BaseEntity {
     private BigDecimal price;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "pdt_usr_id")
-    private UsuarioEntity usuario;
+    @JoinColumn(name = "pdt_fnc_id")
+    private FornecedoresEntity fornecedores;
 
     public ProductsEntity() {
     }

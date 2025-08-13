@@ -33,9 +33,6 @@ public class UsuarioEntity extends BaseEntity {
     @Column(name = "usr_dt_acoes")
     private Date dataHrAcoes;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductsEntity> productsEntityList = new ArrayList<>();
-
     public UsuarioEntity(UUID id, String name, String email, String telefone, Boolean ativo, Date dataHrAcoes) {
         super(id);
         this.name = name;

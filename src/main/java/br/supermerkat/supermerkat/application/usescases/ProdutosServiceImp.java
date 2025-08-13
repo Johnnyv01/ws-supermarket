@@ -1,9 +1,10 @@
 package br.supermerkat.supermerkat.application.usescases;
 
+import br.supermerkat.supermerkat.adapters.outbound.entity.FornecedoresEntity;
 import br.supermerkat.supermerkat.adapters.outbound.entity.ProductsEntity;
 import br.supermerkat.supermerkat.adapters.outbound.entity.UsuarioEntity;
 import br.supermerkat.supermerkat.adapters.outbound.repositories.SpringProductsRepository;
-import br.supermerkat.supermerkat.adapters.outbound.repositories.SpringUsersRepository;
+import br.supermerkat.supermerkat.adapters.outbound.repositories.SpringSuppliersRepository;
 import br.supermerkat.supermerkat.application.BaseServiceImpl;
 import br.supermerkat.supermerkat.domain.model.request.ProductsRequestDTO;
 import br.supermerkat.supermerkat.domain.model.response.ProductsResponseDTO;
@@ -17,11 +18,11 @@ import java.util.UUID;
 @Service
 public class ProdutosServiceImp extends BaseServiceImpl<ProductsEntity, ProductsRequestDTO, ProductsResponseDTO, SpringProductsRepository> implements ProdutoServicePort {
 
-    private final SpringUsersRepository springUsersRepository;
+    private final SpringSuppliersRepository springSuppliersRepository;
 
-    protected ProdutosServiceImp(SpringProductsRepository repository, SpringUsersRepository springUsersRepository) {
+    protected ProdutosServiceImp(SpringProductsRepository repository, SpringSuppliersRepository springSuppliersRepository) {
         super(repository, "Produtos", ProductsResponseDTO::fromEntity , ProductsResponseDTO::fromEntities);
-        this.springUsersRepository = springUsersRepository;
+        this.springSuppliersRepository = springSuppliersRepository;
     }
 
     @Override
@@ -38,8 +39,8 @@ public class ProdutosServiceImp extends BaseServiceImpl<ProductsEntity, Products
     public ResponseAPI<ProductsResponseDTO> create(ProductsRequestDTO request) {
         ProductsEntity productsEntity = request.toEntity();
 
-        UsuarioEntity usuario = springUsersRepository.getOrThrow(request.getUsuarioId(),entityName);
-        productsEntity.setUsuario(usuario);
+        FornecedoresEntity fornecedores = springSuppliersRepository.getOrThrow(request.getUsuarioId(),entityName);
+        productsEntity.setFornecedores(fornecedores);
 
         repository.save(productsEntity);
 

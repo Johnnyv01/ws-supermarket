@@ -14,11 +14,8 @@ import java.util.UUID;
 public class ProductsRequestDTO implements BaseEntityRequest<ProductsEntity> {
 
     private UUID id;
-
     private String name;
-
     private BigDecimal price;
-
     private UUID usuarioId;
 
     @Override
